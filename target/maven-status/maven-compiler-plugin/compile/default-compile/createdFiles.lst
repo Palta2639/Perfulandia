@@ -1,0 +1,9 @@
+Ventas_Microservicio\Ventas\Config\RestTemplateConfig.class
+Ventas_Microservicio\Ventas\Model\Producto.class
+Ventas_Microservicio\Ventas\Model\Ventas.class
+Ventas_Microservicio\Ventas\Model\Cliente.class
+Ventas_Microservicio\Ventas\Service\VentasService.class
+Ventas_Microservicio\Ventas\VentasApplication.class
+Ventas_Microservicio\Ventas\Controller\VentasController.class
+Ventas_Microservicio\Ventas\Repository\VentasRepository.class
+Ventas_Microservicio\Ventas\Service\Impl\VentasServiceImpl.class
