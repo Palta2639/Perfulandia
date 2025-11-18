@@ -45,10 +45,6 @@ public class VentasServiceImpl implements VentasService {
 
         Cliente cliente = clienteResponse.getBody();
 
-        // Verificar si el cliente está bloqueado
-        if (cliente.isBloqueado()) {
-            throw new RuntimeException("Cliente bloqueado, no puede realizar ventas");
-        }
 
         // Obtener el producto para validar stock y obtener precio
         ResponseEntity<Producto> productoResponse = restTemplate.getForEntity(
@@ -71,9 +67,8 @@ public class VentasServiceImpl implements VentasService {
         venta.setClienteNombre(cliente.getPrimerNombre() + " " + cliente.getUltimoNombre());
         venta.setProductoNombre(producto.getNombre());
 
-        // Calcular total en pesos chilenos (1 USD ≈ 950 CLP)
-        double totalEnUSD = producto.getPrecio() * venta.getCantidad();
-        double totalEnCLP = totalEnUSD * 950;
+        // Calcular total en pesos chilenos (precio en CLP * cantidad)
+        double totalEnCLP = producto.getPrecio() * venta.getCantidad();
         venta.setTotal(totalEnCLP);
         venta.setFecha(LocalDateTime.now());
 
@@ -88,5 +83,67 @@ public class VentasServiceImpl implements VentasService {
     @Override
     public List<Ventas> getVentasByClienteId(Long clienteId) {
         return ventasRepository.findByClienteId(clienteId);
+    }
+
+    @Override
+    public Ventas updateVenta(Ventas venta) {
+        // Verificar que la venta existe
+        Optional<Ventas> existingVenta = ventasRepository.findById(venta.getId());
+        if (existingVenta.isEmpty()) {
+            throw new RuntimeException("Venta no encontrada");
+        }
+
+        // Obtener el cliente para obtener el nombre
+        ResponseEntity<Cliente> clienteResponse = restTemplate.getForEntity(
+            clienteServiceUrl + venta.getClienteId(),
+            Cliente.class
+        );
+
+        if (!clienteResponse.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+
+        Cliente cliente = clienteResponse.getBody();
+
+        // Obtener el producto para validar stock y obtener precio
+        ResponseEntity<Producto> productoResponse = restTemplate.getForEntity(
+            productoServiceUrl + venta.getProductoId(),
+            Producto.class
+        );
+
+        if (!productoResponse.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Producto no encontrado");
+        }
+
+        Producto producto = productoResponse.getBody();
+
+        // Validar stock
+        if (producto.getStock() == null || producto.getStock() < venta.getCantidad()) {
+            throw new RuntimeException("Stock insuficiente para el producto");
+        }
+
+        // Asignar nombres automáticamente
+        venta.setClienteNombre(cliente.getPrimerNombre() + " " + cliente.getUltimoNombre());
+        venta.setProductoNombre(producto.getNombre());
+
+        // Calcular total en pesos chilenos (precio en CLP * cantidad)
+        double totalEnCLP = producto.getPrecio() * venta.getCantidad();
+        venta.setTotal(totalEnCLP);
+        venta.setFecha(LocalDateTime.now());
+
+        return ventasRepository.save(venta);
+    }
+
+    @Override
+    public void deleteVenta(Long id) {
+        if (!ventasRepository.existsById(id)) {
+            throw new RuntimeException("Venta no encontrada");
+        }
+        ventasRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Ventas> getAllVentas() {
+        return ventasRepository.findAll();
     }
 }

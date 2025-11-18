@@ -12,7 +12,6 @@ public class Cliente {
     private String ciudad;
     private String pais;
     private String codigoPostal;
-    private boolean bloqueado;
     private LocalDate fechaCreacion;
 
     // Getters and Setters
@@ -39,9 +38,6 @@ public class Cliente {
 
     public String getCodigoPostal() { return codigoPostal; }
     public void setCodigoPostal(String codigoPostal) { this.codigoPostal = codigoPostal; }
-
-    public boolean isBloqueado() { return bloqueado; }
-    public void setBloqueado(boolean bloqueado) { this.bloqueado = bloqueado; }
 
     public LocalDate getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDate fechaCreacion) { this.fechaCreacion = fechaCreacion; }

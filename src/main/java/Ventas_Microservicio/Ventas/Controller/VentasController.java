@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import Ventas_Microservicio.Ventas.Model.Ventas;
 import Ventas_Microservicio.Ventas.Service.Impl.VentasServiceImpl;
 import java.util.List;
@@ -31,8 +32,6 @@ public class VentasController {
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Cliente no encontrado")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-            } else if (e.getMessage().contains("Cliente bloqueado")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
             } else if (e.getMessage().contains("Producto no encontrado")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             } else if (e.getMessage().contains("Stock insuficiente")) {
@@ -42,6 +41,11 @@ public class VentasController {
         }
     }
 
+      @GetMapping
+    public ResponseEntity<List<Ventas>> getAllVentas() {
+        List<Ventas> ventas = ventasService.getAllVentas();
+        return ResponseEntity.ok(ventas);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Ventas> getVentaById(@PathVariable Long id) {
         return ventasService.getVentaById(id)
@@ -53,5 +57,38 @@ public class VentasController {
     public ResponseEntity<List<Ventas>> getVentasByCliente(@PathVariable Long clienteId) {
         List<Ventas> ventas = ventasService.getVentasByClienteId(clienteId);
         return ResponseEntity.ok(ventas);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Ventas> updateVenta(@PathVariable Long id, @RequestBody Ventas venta) {
+        try {
+            venta.setId(id); // Asegurar que el ID sea el del path
+            Ventas updatedVenta = ventasService.updateVenta(venta);
+            return ResponseEntity.ok(updatedVenta);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Venta no encontrada")) {
+                return ResponseEntity.notFound().build();
+            } else if (e.getMessage().contains("Cliente no encontrado")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            } else if (e.getMessage().contains("Producto no encontrado")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            } else if (e.getMessage().contains("Stock insuficiente")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteVenta(@PathVariable Long id) {
+        try {
+            ventasService.deleteVenta(id);
+            return ResponseEntity.ok("Venta eliminada exitosamente");
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Venta no encontrada")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la venta");
+        }
     }
 }
