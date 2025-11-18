@@ -23,9 +23,7 @@ public class Producto {
     
     @Column
     private String categoria;
-    
-    @Column
-    private String imagen;
+
     
     @Column
     private Integer stock;
