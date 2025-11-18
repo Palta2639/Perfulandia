@@ -37,13 +37,9 @@ public class Cliente {
     @Column(name = "codigo_postal")
     private String codigoPostal;
 
-    @Column(name = "bloqueado", nullable = false)
-    private boolean bloqueado = false;
-
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDate fechaCreacion;
 
-    // Constructores
     public Cliente() {}
 
     public Cliente(String primerNombre, String ultimoNombre, String correoElectronico, String calle, String ciudad, String pais, String codigoPostal) {
@@ -57,7 +53,6 @@ public class Cliente {
         this.fechaCreacion = LocalDate.now();
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -122,13 +117,6 @@ public class Cliente {
         this.codigoPostal = codigoPostal;
     }
 
-    public boolean isBloqueado() {
-        return bloqueado;
-    }
-
-    public void setBloqueado(boolean bloqueado) {
-        this.bloqueado = bloqueado;
-    }
 
     public LocalDate getFechaCreacion() {
         return fechaCreacion;

@@ -47,12 +47,6 @@ public class ClienteServiceImpl implements ClienteService {
         }
     }
 
-    @Override
-    public void blockCliente(Long id) {
-        Cliente cliente = getClienteById(id);
-        cliente.setBloqueado(true);
-        clienteRepository.save(cliente);
-    }
 
     @Override
     public void deleteCliente(Long id) {
@@ -63,4 +57,11 @@ public class ClienteServiceImpl implements ClienteService {
     public List<Cliente> getAllClientes() {
         return clienteRepository.findAll();
     }
+
+    @Override
+    public void blockCliente(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'blockCliente'");
+    }
+
 }
